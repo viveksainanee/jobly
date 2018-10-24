@@ -1,0 +1,10 @@
+#!/bin/bash
+
+dropdb jobly
+dropdb jobly-test
+
+createdb jobly
+createdb jobly-test
+
+psql jobly < data.sql
+psql jobly-test < data.sql
