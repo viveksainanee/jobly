@@ -25,6 +25,8 @@ function sqlForPartialUpdate(table, items, key, id) {
     }
   }
 
+  console.log('items: ', items);
+
   // of or in?
   for (let column in items) {
     columns.push(`${column}=$${idx}`);
@@ -35,8 +37,14 @@ function sqlForPartialUpdate(table, items, key, id) {
   let cols = columns.join(', ');
   let query = `UPDATE ${table} SET ${cols} WHERE ${key}=$${idx} RETURNING *`;
 
-  let values = Object.values(items);
-  values.push(id);
+  // let values = Object.values(items);
+  // values.push(id);
+
+  //values should be an array of all the values to change
+  let values = [];
+  for (let val in items) {
+    values.push(items[val]);
+  }
 
   return { query, values };
 }
