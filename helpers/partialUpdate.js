@@ -11,40 +11,42 @@
  *
  */
 
-function sqlForPartialUpdate(table, items, key, id) {
+function sqlForPartialUpdate(
+  table,
+  objColumnsAndValues,
+  primaryKeyColumn,
+  primaryKeyValue
+) {
   // keep track of item indexes
   // store all the columns we want to update and associate with vals
 
   let idx = 1;
-  let columns = [];
+  let columnHeaders = [];
 
   // filter out keys that start with "_" -- we don't want these in DB
-  for (let key in items) {
-    if (key.startsWith('_')) {
-      delete items[key];
+  for (let col in objColumnsAndValues) {
+    if (col.startsWith('_')) {
+      delete objColumnsAndValues[col];
     }
   }
 
-  console.log('items: ', items);
-
-  // of or in?
-  for (let column in items) {
-    columns.push(`${column}=$${idx}`);
+  for (let column in objColumnsAndValues) {
+    columnHeaders.push(`${column}=$${idx}`);
     idx += 1;
   }
 
   // build query
-  let cols = columns.join(', ');
-  let query = `UPDATE ${table} SET ${cols} WHERE ${key}=$${idx} RETURNING *`;
+  let columnHeadersString = columnHeaders.join(', ');
 
-  // let values = Object.values(items);
-  // values.push(id);
+  let query = `UPDATE ${table} SET ${columnHeadersString} WHERE ${primaryKeyColumn}=$${idx} RETURNING *`;
 
   //values should be an array of all the values to change
   let values = [];
-  for (let val in items) {
-    values.push(items[val]);
+
+  for (let columnName in objColumnsAndValues) {
+    values.push(objColumnsAndValues[columnName]);
   }
+  values.push(primaryKeyValue);
 
   return { query, values };
 }

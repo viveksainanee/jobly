@@ -68,8 +68,15 @@ router.get('/:handle', async (req, res, next) => {
 router.patch('/:handle', async (req, res, next) => {
   try {
     let { handle } = req.params;
+    let { name, num_employees, description, logo_url } = req.body;
 
-    const company = await Company.update(req.body);
+    const company = await Company.update(
+      handle,
+      name,
+      num_employees,
+      description,
+      logo_url
+    );
     res.json({ company });
   } catch (err) {
     return next(err);

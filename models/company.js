@@ -64,25 +64,26 @@ class Company {
   static async update(handle, name, num_employees, description, logo_url) {
     let queryObj = sqlForPartialUpdate(
       'companies',
-      [handle, name, num_employees, description, logo_url],
+      {
+        handle,
+        name,
+        num_employees,
+        description,
+        logo_url
+      },
       'handle',
       handle
     );
 
-    console.log(
-      'query is: ',
-      queryObj.query,
-      '\nvalues are: ',
-      queryObj.values
-    );
-    // const result = await db.query(queryObj.query, queryObj.values);
-    // if (result.rows.length > 0) {
-    //   return result.rows[0];
-    // } else {
-    //   let err = new Error('Unable to find company');
-    //   err.status = 400;
-    //   throw err;
-    // }
+    const result = await db.query(queryObj.query, queryObj.values);
+
+    if (result.rows.length > 0) {
+      return result.rows[0];
+    } else {
+      let err = new Error('Unable to find company');
+      err.status = 400;
+      throw err;
+    }
   }
 
   //sqlForPartialUpdate(table, items, key, id)
