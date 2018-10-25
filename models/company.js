@@ -86,7 +86,21 @@ class Company {
     }
   }
 
-  //sqlForPartialUpdate(table, items, key, id)
+  static async deleteByHandle(handle) {
+    const result = await db.query(
+      `DELETE FROM companies
+      WHERE handle = $1
+      RETURNING handle`,
+      [handle.toUpperCase()]
+    );
+    if (result.rows.length > 0) {
+      return result.rows[0];
+    } else {
+      let err = new Error('Unable to find company');
+      err.status = 400;
+      throw err;
+    }
+  }
 }
 
 module.exports = Company;

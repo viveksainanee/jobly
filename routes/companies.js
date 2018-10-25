@@ -4,6 +4,9 @@ const express = require('express');
 
 const Company = require('../models/company');
 
+const { validate } = require('jsonschema');
+const companiesPostSchema = require('../schemas/companiesPost.json');
+
 const router = new express.Router();
 
 /** Homepage: return handle and name for all companies. 
@@ -22,8 +25,6 @@ router.get('/', async (req, res, next) => {
   try {
     let { search, min_employees, max_employees } = req.query;
 
-    console.log(router);
-
     const companies = await Company.search(
       search,
       min_employees,
@@ -41,9 +42,15 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    console.log('hit post route');
+    const result = validate(req.body, companiesPostSchema);
+    if (!result.valid) {
+      let error = {};
+      error.message = result.errors.map(error => error.stack);
+      error.status = 400;
+      return next(error);
+    }
+
     const company = await Company.create(req.body);
-    console.log('company is ', company);
     res.json(company);
   } catch (err) {
     return next(err);
@@ -78,6 +85,17 @@ router.patch('/:handle', async (req, res, next) => {
       logo_url
     );
     res.json({ company });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.delete('/:handle', async (req, res, next) => {
+  try {
+    let { handle } = req.params;
+
+    await Company.deleteByHandle(handle);
+    res.json({ message: 'Company delete' });
   } catch (err) {
     return next(err);
   }
