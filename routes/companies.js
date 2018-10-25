@@ -1,4 +1,4 @@
-/** Routes for Jobly */
+/** Routes for Companies */
 
 const express = require('express');
 
@@ -46,8 +46,6 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   const result = validate(req.body, companiesPostSchema);
   if (!result.valid) {
-    console.log('req dot body is', req.body);
-    console.log('result is', result);
     let error = {};
     error.message = result.errors.map(error => error.stack);
     error.status = 400;

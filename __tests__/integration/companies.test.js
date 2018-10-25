@@ -33,7 +33,7 @@ afterAll(async function() {
 
 /**  Tests for search routes**/
 describe('Search for comnpanies at /companies', async function() {
-  test('Gets companies from query', async function() {
+  test('Gets companies from query successfully', async function() {
     const res = await request(app).get('/companies');
     expect(res.statusCode).toBe(200);
     expect(res.body.companies).toEqual([
@@ -43,7 +43,7 @@ describe('Search for comnpanies at /companies', async function() {
     ]);
   });
 
-  test('Gets companies from query handle', async function() {
+  test('Gets companies from query, search by handle', async function() {
     const res = await request(app).get('/companies?search=BEEF');
     expect(res.statusCode).toBe(200);
     expect(res.body.companies).toEqual([
@@ -51,7 +51,7 @@ describe('Search for comnpanies at /companies', async function() {
     ]);
   });
 
-  test('Gets companies from query max employees', async function() {
+  test('Gets companies from query, search by max employees', async function() {
     const res = await request(app).get('/companies?max_employees=100');
     expect(res.statusCode).toBe(200);
     expect(res.body.companies).toEqual([
@@ -60,7 +60,7 @@ describe('Search for comnpanies at /companies', async function() {
     ]);
   });
 
-  test('Gets companies from query min employees', async function() {
+  test('Gets companies from query, search by min employees', async function() {
     const res = await request(app).get('/companies?min_employees=100');
     expect(res.statusCode).toBe(200);
     expect(res.body.companies).toEqual([{ handle: 'INTC', name: 'Intel' }]);
