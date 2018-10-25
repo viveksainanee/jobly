@@ -23,8 +23,10 @@ returns
 
 router.get('/', async (req, res, next) => {
   try {
-    let { search, min_employees, max_employees } = req.query;
+    parseInt(req.query.min_employees);
+    parseInt(req.query.max_employees);
 
+    let { search, min_employees, max_employees } = req.query;
     const companies = await Company.search(
       search,
       min_employees,
@@ -32,6 +34,7 @@ router.get('/', async (req, res, next) => {
     );
     res.json(companies);
   } catch (err) {
+    err.status = 400;
     return next(err);
   }
 });
@@ -41,20 +44,18 @@ router.get('/', async (req, res, next) => {
  */
 
 router.post('/', async (req, res, next) => {
-  try {
-    const result = validate(req.body, companiesPostSchema);
-    if (!result.valid) {
-      let error = {};
-      error.message = result.errors.map(error => error.stack);
-      error.status = 400;
-      return next(error);
-    }
-
-    const company = await Company.create(req.body);
-    res.json(company);
-  } catch (err) {
-    return next(err);
+  const result = validate(req.body, companiesPostSchema);
+  if (!result.valid) {
+    console.log('req dot body is', req.body);
+    console.log('result is', result);
+    let error = {};
+    error.message = result.errors.map(error => error.stack);
+    error.status = 400;
+    return next(error);
   }
+
+  const company = await Company.create(req.body);
+  res.json(company);
 });
 
 /** Returns a single company found by handle
@@ -62,14 +63,10 @@ router.post('/', async (req, res, next) => {
  */
 
 router.get('/:handle', async (req, res, next) => {
-  try {
-    let { handle } = req.params;
+  let { handle } = req.params;
 
-    const company = await Company.getByHandle(handle);
-    res.json({ company });
-  } catch (err) {
-    return next(err);
-  }
+  const company = await Company.getByHandle(handle);
+  res.json({ company });
 });
 
 router.patch('/:handle', async (req, res, next) => {

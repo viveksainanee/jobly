@@ -75,7 +75,7 @@ class Company {
       return result.rows[0];
     } else {
       let err = new Error('Unable to find company');
-      err.status = 400;
+      err.status = 404;
       throw err;
     }
   }
@@ -91,7 +91,7 @@ class Company {
       return result.rows[0];
     } else {
       let err = new Error('Unable to find company');
-      err.status = 400;
+      err.status = 404;
       throw err;
     }
   }

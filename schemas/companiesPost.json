@@ -33,14 +33,14 @@
     },
     "description": {
       "$id": "#/properties/description",
-      "type": "null",
+      "type": "text",
       "title": "The Description Schema",
       "default": null,
       "examples": [null]
     },
     "logo_url": {
       "$id": "#/properties/logo_url",
-      "type": "null",
+      "type": "url",
       "title": "The Logo_url Schema",
       "default": null,
       "examples": [null]
