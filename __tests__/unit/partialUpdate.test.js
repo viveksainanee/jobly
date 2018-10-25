@@ -8,7 +8,7 @@ beforeEach(async function() {
   //seed with some data
   await db.query(
     `INSERT INTO companies (handle, name, num_employees, description, logo_url)
-    VALUES ('AAPL', 'Apple Computers', '30000', 'We make computers, not beef', 'https://image.freepik.com/free-icon/apple-logo_318-40184.jpg')`
+    VALUES ('BEEF', 'Andrews Hot Dogs', '3', 'not beef hot dogs', 'https://image.freepik.com/free-icon/apple-logo_318-40184.jpg')`
   );
 });
 
@@ -27,12 +27,28 @@ describe('partialUpdate()', () => {
         'companies',
         { name: 'andrews beef', num_employees: 1 },
         'handle',
-        'AAPL'
+        'BEEF'
       )
     ).toEqual({
       query:
         'UPDATE companies SET name=$1, num_employees=$2 WHERE handle=$3 RETURNING *',
-      values: ['andrews beef', 1, 'AAPL']
+      values: ['andrews beef', 1, 'BEEF']
+    });
+  });
+});
+
+describe('partialUpdate()', () => {
+  it('should skip "_" field', function() {
+    expect(
+      sqlForPartialUpdate(
+        'companies',
+        { name: 'andrews beef', _num_employees: 1 },
+        'handle',
+        'BEEF'
+      )
+    ).toEqual({
+      query: 'UPDATE companies SET name=$1 WHERE handle=$2 RETURNING *',
+      values: ['andrews beef', 'BEEF']
     });
   });
 });

@@ -5,17 +5,13 @@ const sqlForPartialUpdate = require('../helpers/partialUpdate');
 
 class Company {
   static async create({ handle, name, num_employees, description, logo_url }) {
-    console.log('in create method');
-
     //check if the company exists
     const result = await db.query(
       'SELECT handle FROM companies WHERE handle = $1;',
       [handle]
     );
     let company = result.rows;
-    console.log('company =', company);
     if (company.length === 0) {
-      console.log('company is 0');
       // insert the message
       const result = await db.query(
         `INSERT INTO companies (handle, name, num_employees, description, logo_url)
@@ -39,8 +35,6 @@ class Company {
         AND num_employees > $2 AND num_employees < $3;`,
       ['%' + handle + '%', min, max]
     );
-
-    console.log('result is ', result);
 
     return { companies: result.rows };
   }
