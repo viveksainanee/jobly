@@ -2,7 +2,7 @@ const db = require('../db');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const Company = require('./company.js');
 
-/** Company class for companies */
+/** Job class */
 
 class Job {
   static async create(title, salary, equity, company_handle) {

@@ -34,3 +34,17 @@ VALUES ('Andrews Assistant', 150000, 0.0, 'BEEF', current_timestamp);
 
 INSERT INTO jobs (title, salary, equity, company_handle, date_posted)
 VALUES ('Viveks Assistant', 150001, 0.4, 'CHKN', current_timestamp);
+
+CREATE TABLE users (
+  username TEXT PRIMARY KEY,
+  password TEXT NOT NULL,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  photo_url TEXT,
+  is_admin BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+
+INSERT INTO users (username, password, first_name, last_name, email, photo_url)
+VALUES ('vivek1', 'password2', 'vivek', 'sainanee', 'vs1234@gmail.com', 'test.png');
