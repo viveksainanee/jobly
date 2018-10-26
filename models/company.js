@@ -1,6 +1,5 @@
 const db = require('../db');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
-const Job = require('./job');
 
 /** Company class for companies */
 
@@ -49,10 +48,15 @@ class Company {
     );
 
     if (result.rows.length > 0) {
-      const jobsResult = await Job.search(result.rows[0].handle);
+      const jobsResult = await db.query(
+        `SELECT title, company_handle
+          FROM jobs
+          WHERE company_handle=$1;`,
+        [result.rows[0].handle]
+      );
 
       const company = result.rows[0];
-      company.jobs = jobsResult.jobs;
+      company.jobs = jobsResult.rows[0];
 
       return company;
     } else {

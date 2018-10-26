@@ -76,13 +76,8 @@ describe('test Job.search()', () => {
 
 describe('test Job.getById()', async () => {
   it('should get a job by its Id', async () => {
-    expect(await Job.getById(10000)).toEqual({
-      description: 'not beef hot dogs',
-      handle: 'BEEF',
-      logo_url: 'https://image.freepik.com/free-icon/apple-logo_318-40184.jpg',
-      name: 'Andrews Hot Dogs',
-      num_employees: 3
-    });
+    let job = await Job.getById(10000);
+    expect(job.job.company.handle).toBe('CHICKEN');
   });
 
   //   it('it should raise error if there is no handle', async () => {

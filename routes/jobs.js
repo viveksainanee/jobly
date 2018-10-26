@@ -63,7 +63,7 @@ router.get('/:id', async (req, res, next) => {
   let { id } = req.params;
 
   const job = await Job.getById(id);
-  return res.json({ job });
+  return res.json(job);
 });
 
 /** Updates a single job found by id

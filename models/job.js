@@ -1,6 +1,6 @@
 const db = require('../db');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
-const Company = require('./company');
+const Company = require('./company.js');
 
 /** Company class for companies */
 
@@ -33,30 +33,33 @@ class Job {
   }
 
   static async getById(id) {
-    const result = await db.query(
-      `SELECT id, title, salary, equity, company_handle, date_posted
+    try {
+      const result = await db.query(
+        `SELECT id, title, salary, equity, company_handle, date_posted
       FROM jobs
       WHERE id = $1;`,
-      [id]
-    );
-    let job;
+        [id]
+      );
 
-    if (result.rows.length > 0) {
-      job = result.rows[0];
-    } else {
-      let err = new Error('Unable to find job');
-      err.status = 400;
-      throw err;
+      let job;
+      if (result.rows.length > 0) {
+        job = result.rows[0];
+      } else {
+        let err = new Error('Unable to find job');
+        err.status = 400;
+        throw err;
+      }
+      let companyHandle = result.rows[0].company_handle;
+
+      const companyResult = await Company.getByHandle(companyHandle);
+
+      job.company = companyResult;
+      let restructure = { job };
+
+      return restructure;
+    } catch (err) {
+      return err;
     }
-
-    const companyResult = await Company.getByHandle(
-      result.rows[0].company_handle
-    );
-
-    job.company = companyResult;
-    let restructure = { job };
-
-    return restructure;
   }
 
   // this route updates the job
