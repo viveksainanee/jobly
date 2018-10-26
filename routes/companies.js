@@ -3,6 +3,11 @@
 const express = require('express');
 
 const Company = require('../models/company');
+const {
+  ensureLoggedIn,
+  ensureCorrectUser,
+  ensureAdmin
+} = require('../middleware/middleware');
 
 const { validate } = require('jsonschema');
 const companiesPostSchema = require('../schemas/companiesPost.json');
@@ -21,7 +26,7 @@ returns
  
 **/
 
-router.get('/', async (req, res, next) => {
+router.get('/', ensureLoggedIn, async (req, res, next) => {
   try {
     parseInt(req.query.min_employees);
     parseInt(req.query.max_employees);
@@ -43,7 +48,7 @@ router.get('/', async (req, res, next) => {
  * {company: companyData}
  */
 
-router.post('/', async (req, res, next) => {
+router.post('/', ensureAdmin, async (req, res, next) => {
   const result = validate(req.body, companiesPostSchema);
   if (!result.valid) {
     let error = {};
@@ -60,14 +65,14 @@ router.post('/', async (req, res, next) => {
  * {company: companyData}
  */
 
-router.get('/:handle', async (req, res, next) => {
+router.get('/:handle', ensureLoggedIn, async (req, res, next) => {
   let { handle } = req.params;
 
   const company = await Company.getByHandle(handle);
   res.json({ company });
 });
 
-router.patch('/:handle', async (req, res, next) => {
+router.patch('/:handle', ensureAdmin, async (req, res, next) => {
   try {
     let { handle } = req.params;
     let { name, num_employees, description, logo_url } = req.body;
@@ -85,7 +90,7 @@ router.patch('/:handle', async (req, res, next) => {
   }
 });
 
-router.delete('/:handle', async (req, res, next) => {
+router.delete('/:handle', ensureAdmin, async (req, res, next) => {
   try {
     let { handle } = req.params;
 

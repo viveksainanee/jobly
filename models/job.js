@@ -40,6 +40,7 @@ class Job {
       WHERE id = $1;`,
         [id]
       );
+      console.log(result.rows);
 
       let job;
       if (result.rows.length > 0) {
@@ -50,6 +51,7 @@ class Job {
         throw err;
       }
       let companyHandle = result.rows[0].company_handle;
+      console.log(companyHandle);
 
       const companyResult = await Company.getByHandle(companyHandle);
 

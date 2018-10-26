@@ -3,6 +3,8 @@
 const express = require('express');
 
 const Job = require('../models/job');
+const User = require('../models/user');
+const { ensureLoggedIn, ensureAdmin } = require('../middleware/middleware');
 
 const { validate } = require('jsonschema');
 const jobsPostSchema = require('../schemas/jobsPost.json');
@@ -13,7 +15,7 @@ const router = new express.Router();
  * {job: jobData}
  */
 
-router.post('/', async (req, res, next) => {
+router.post('/', ensureAdmin, async (req, res, next) => {
   try {
     const result = validate(req.body, jobsPostSchema);
     if (!result.valid) {
@@ -36,7 +38,7 @@ router.post('/', async (req, res, next) => {
  * {jobs: [job, ...]}
  */
 
-router.get('/', async (req, res, next) => {
+router.get('/', ensureLoggedIn, async (req, res, next) => {
   try {
     parseInt(req.query.min_salary);
     parseInt(req.query.min_equity);
@@ -50,7 +52,7 @@ router.get('/', async (req, res, next) => {
     const jobs = await Job.search(search, min_salary, min_equity);
     res.json(jobs);
   } catch (err) {
-    err.status = 400;
+    err.status = err.status || 400;
     return next(err);
   }
 });
@@ -59,7 +61,7 @@ router.get('/', async (req, res, next) => {
  * {job: jobData}
  */
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', ensureLoggedIn, async (req, res, next) => {
   let { id } = req.params;
 
   const job = await Job.getById(id);
@@ -70,8 +72,16 @@ router.get('/:id', async (req, res, next) => {
  * {job: jobData}
  */
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', ensureAdmin, async (req, res, next) => {
   try {
+    const result = validate(req.body, jobsPostSchema);
+    if (!result.valid) {
+      let error = {};
+      error.message = result.errors.map(error => error.stack);
+      error.status = 400;
+      return next(error);
+    }
+
     let { id } = req.params;
     let { title, salary, equity, company_handle } = req.body;
 
@@ -86,7 +96,7 @@ router.patch('/:id', async (req, res, next) => {
  * { message: "Job deleted" }
  */
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', ensureAdmin, async (req, res, next) => {
   try {
     let { id } = req.params;
 

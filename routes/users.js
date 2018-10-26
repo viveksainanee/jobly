@@ -5,6 +5,10 @@ const express = require('express');
 const User = require('../models/user');
 
 const { validate } = require('jsonschema');
+const {
+  ensureLoggedIn,
+  ensureCorrectUser
+} = require('../middleware/middleware');
 const usersPostSchema = require('../schemas/usersPost.json');
 
 const router = new express.Router();
@@ -42,7 +46,9 @@ router.post('/', async (req, res, next) => {
       is_admin
     );
 
-    res.json(user);
+    let token = await User.createUserToken(username);
+
+    res.json({ token });
   } catch (err) {
     err.status = 400;
     return next(err);
@@ -77,7 +83,7 @@ router.get('/:username', async (req, res, next) => {
 //  * {user: {username, first_name, last_name, email, photo_url}}
 //  */
 
-router.patch('/:username', async (req, res, next) => {
+router.patch('/:username', ensureCorrectUser, async (req, res, next) => {
   try {
     let { username } = req.params;
     let {
@@ -108,7 +114,7 @@ router.patch('/:username', async (req, res, next) => {
 //  * { message: "User deleted" }
 //  */
 
-router.delete('/:username', async (req, res, next) => {
+router.delete('/:username', ensureCorrectUser, async (req, res, next) => {
   try {
     let { username } = req.params;
 

@@ -2,6 +2,8 @@ const db = require('../db');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const bcrypt = require('bcrypt');
 const BCRYPT_WORK_ROUNDS = 10;
+const jwt = require('jsonwebtoken');
+const { SECRET } = require('../config');
 
 /** User class for users */
 
@@ -133,6 +135,31 @@ class User {
       err.status = 404;
       throw err;
     }
+  }
+
+  static async authenticate(username, password) {
+    const result = await db.query(
+      'SELECT password FROM users WHERE username = $1',
+      [username]
+    );
+    let user = result.rows[0];
+
+    return user && (await bcrypt.compare(password, user.password));
+  }
+
+  static async createUserToken(username) {
+    // need to get is admin
+    const result = await db.query(
+      'SELECT is_admin FROM users WHERE username = $1',
+      [username]
+    );
+
+    let token = jwt.sign(
+      { username, is_admin: result.rows[0].is_admin },
+      SECRET,
+      {}
+    );
+    return token;
   }
 }
 
