@@ -1,5 +1,6 @@
 const db = require('../db');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
+const Job = require('./job');
 
 /** Company class for companies */
 
@@ -46,8 +47,14 @@ class Company {
         WHERE handle = $1;`,
       [handle.toUpperCase()]
     );
+
     if (result.rows.length > 0) {
-      return result.rows[0];
+      const jobsResult = await Job.search(result.rows[0].handle);
+
+      const company = result.rows[0];
+      company.jobs = jobsResult.jobs;
+
+      return company;
     } else {
       let err = new Error('Unable to find company');
       err.status = 400;

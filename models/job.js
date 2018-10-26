@@ -59,46 +59,46 @@ class Job {
     return restructure;
   }
 
-  // static async update(handle, name, num_employees, description, logo_url) {
-  //   let queryObj = sqlForPartialUpdate(
-  //     'companies',
-  //     {
-  //       handle,
-  //       name,
-  //       num_employees,
-  //       description,
-  //       logo_url
-  //     },
-  //     'handle',
-  //     handle
-  //   );
+  // this route updates the job
+  static async update(id, title, salary, equity, company_handle) {
+    let queryObj = sqlForPartialUpdate(
+      'jobs',
+      {
+        title,
+        salary,
+        equity,
+        company_handle
+      },
+      'id',
+      id
+    );
 
-  //   const result = await db.query(queryObj.query, queryObj.values);
+    const result = await db.query(queryObj.query, queryObj.values);
 
-  //   if (result.rows.length > 0) {
-  //     return result.rows[0];
-  //   } else {
-  //     let err = new Error('Unable to find company');
-  //     err.status = 404;
-  //     throw err;
-  //   }
-  // }
+    if (result.rows.length > 0) {
+      return result.rows[0];
+    } else {
+      let err = new Error('Unable to find job');
+      err.status = 404;
+      throw err;
+    }
+  }
 
-  // static async deleteByHandle(handle) {
-  //   const result = await db.query(
-  //     `DELETE FROM companies
-  //     WHERE handle = $1
-  //     RETURNING handle`,
-  //     [handle.toUpperCase()]
-  //   );
-  //   if (result.rows.length > 0) {
-  //     return result.rows[0];
-  //   } else {
-  //     let err = new Error('Unable to find company');
-  //     err.status = 404;
-  //     throw err;
-  //   }
-  // }
+  static async deleteById(id) {
+    const result = await db.query(
+      `DELETE FROM jobs
+      WHERE id = $1
+      RETURNING id`,
+      [id]
+    );
+    if (result.rows.length > 0) {
+      return result.rows[0];
+    } else {
+      let err = new Error('Unable to find job');
+      err.status = 404;
+      throw err;
+    }
+  }
 }
 
 module.exports = Job;

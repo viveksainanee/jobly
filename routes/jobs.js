@@ -66,33 +66,35 @@ router.get('/:id', async (req, res, next) => {
   return res.json({ job });
 });
 
-// router.patch('/:handle', async (req, res, next) => {
-//   try {
-//     let { handle } = req.params;
-//     let { name, num_employees, description, logo_url } = req.body;
+/** Updates a single job found by id
+ * {job: jobData}
+ */
 
-//     const company = await Company.update(
-//       handle,
-//       name,
-//       num_employees,
-//       description,
-//       logo_url
-//     );
-//     res.json({ company });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
+router.patch('/:id', async (req, res, next) => {
+  try {
+    let { id } = req.params;
+    let { title, salary, equity, company_handle } = req.body;
 
-// router.delete('/:handle', async (req, res, next) => {
-//   try {
-//     let { handle } = req.params;
+    const job = await Job.update(id, title, salary, equity, company_handle);
+    res.json({ job });
+  } catch (err) {
+    return next(err);
+  }
+});
 
-//     await Company.deleteByHandle(handle);
-//     res.json({ message: 'Company delete' });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
+/** Deletes a single job found by id
+ * { message: "Job deleted" }
+ */
+
+router.delete('/:id', async (req, res, next) => {
+  try {
+    let { id } = req.params;
+
+    await Job.deleteById(id);
+    res.json({ message: 'Job deleted' });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 module.exports = router;
